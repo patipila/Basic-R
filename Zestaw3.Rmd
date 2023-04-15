@@ -1,5 +1,5 @@
 ---
-title: "Ćwiczenia 3"
+title: "Zestaw3"
 author: "Patrycja Piła"
 date: "`r Sys.Date()`"
 output: html_document
