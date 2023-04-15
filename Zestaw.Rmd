@@ -1,0 +1,220 @@
+---
+title: "Zestaw 2"
+author: "Patrycja Piła"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Funkcje
+
+## Zadanie 1
+
+* Przykład a
+
+```{r}
+est1 <- function(x,n){
+  sr <- mean(x)
+  suma <- 0
+  for (i in 1:n) {
+    suma <- suma + (x[i]- sr)^2
+  }
+  return(sqrt(suma/n))
+}
+est1(c(1,2,3),3)
+
+```
+* Przykład b
+
+```{r}
+est2 <- function(x,n){
+  sr <- mean(x)
+  suma <- 0
+  for (i in 1:n) {
+    suma <- suma + (x[i]- sr)^2
+  }
+  return(sqrt(suma/(n-1)))
+}
+
+est2(c(1,2,3),3)
+sd(c(1,2,3))
+```
+* Przykład c
+
+```{r}
+est3 <- function(x,n){
+  sr <- mean(x)
+  suma <- 0
+  for (i in 1:n) {
+    suma <- suma + abs(x[i]- sr)
+  }
+  return(suma/n)
+}
+est3(c(1,2,3),3)
+
+```
+* Przykład d
+
+```{r}
+est4 <- function(x,n){
+  sr <- mean(x)
+  suma <- 0
+  for (i in 1:n) {
+    suma <- suma + abs(x[i]- sr)
+  }
+  return(suma/(n-1))
+}
+
+est4(c(1,2,3),3)
+ 
+```
+
+```{r}
+roznice_est1_norm <- c()
+roznice_est1_pois <- c()
+
+for(n in 2:1000) {
+  normalny <- rnorm(n, 100, 10)
+  sd_normalny <- sd(normalny)
+  roznice_est1_norm <- append(roznice_est1_norm, abs(est1(normalny, n) - sd_normalny))
+
+  poissona <- rpois(n, 4)
+  sd_poissona <- sd(poissona)
+  roznice_est1_pois <- append(roznice_est1_pois, abs(est1(poissona, n) - sd_poissona))
+}
+
+plot(roznice_est1_norm, xlab="Liczba danych", ylab="Estymator - odchylenie standardowe", main="Rozklad normalny")
+plot(roznice_est1_pois, xlab="Liczba danych", ylab="Estymator - odchylenie standardowe", main="Rozklad poissona")
+```
+
+## Zadanie 2
+
+Nie rozumiem polecenia do tego zadanie i nie potrafię go wykonać 
+
+```{r}
+wzrost = c(178,162 ,140,189,153,172,198,168,149)
+factor(wzrost)
+
+for(i in 1:length(wzrost)){
+if(wzrost[i] >0 & wzrost[i] <=165 ){
+  levels(wzrost) <- c("niski")
+} else if (wzrost[i] >165 & wzrost[i] <=180){
+    levels(wzrost) <- c("przeciętny")
+} else (wzrost[i] >180 & wzrost[i] <=212)
+    levels(wzrost) <- c("wysoki")
+}
+
+wzrost
+```
+
+
+```{r}
+oceny <- c(3,3,3,4,4,3,5,3,3,4,4,4,5,3,4,5,3,4,3,3,5,5,5,4,4)
+factor(oceny)
+
+levels(oceny) <- c("dostateczny", "dobry", "bardzo dobry")
+```
+
+# Własności pakietu dplyr
+
+Na początku instaluję pakiet `dplyr`, a następnie wczytuje pakiety `tidyr`, `dplyr` oraz `gapminder`.
+
+```{r}
+library(tidyr)
+library(dplyr)
+library(gapminder)
+```
+
+## Zadanie 3
+
+*  Zmieniam nazwy zmiennych, tj. zmienną `year` nazywam `rok`, a zmienną `gdpperCap` nazywam `PKB`.
+
+```{r}
+nazwy <- gapminder %>%
+  select(country:pop,
+         PKB = gdpPercap,
+         rok = year)
+nazwy
+```
+
+* Zmieniam wartości zmiennej `pop` tak, aby ludność była przedstawiona w milionach osób.
+
+```{r}
+populacja <- gapminder %>%
+  mutate(pop_mln = pop/1000000)
+populacja
+```
+
+## Zadanie 4
+
+Wyświetlam wszystkie kraje afrykańskie, które w roku 1957 miały PKB większe niż 12000$
+
+```{r}
+kraje_1957 <- gapminder %>%
+  select(country:gdpPercap)%>%
+   filter(year == "1957",
+         continent== "Africa",
+         gdpPercap >= 12000)
+kraje <- gapminder %>%
+  filter(continent == "Africa" & gdpPercap > 12000)
+
+do_wykresu <- c()
+
+for(rok in 1952:2007) {
+  do_wykresu <- append(do_wykresu, sum(kraje$year == rok))
+}
+
+plot(do_wykresu, x=1952:2007, main = "Kraje Afryki z PKB powyżej 12000$", xlab="Rok", ylab="Liczba krajow", col="steelblue1")
+# kraje_1957
+```
+
+## Zadanie 5
+
+Wyznaczam które kraje spoza Afryki w roku 1962 miały PKB mniejsze od 750$?
+
+```{r}
+kraje_1962 <- gapminder %>%
+  filter(year == '1962',
+         continent != "Africa",
+         gdpPercap<750)
+kraje_1962
+```
+
+## Zadanie 6
+
+Na przykładzie lat 1952, 1977 i 2002 sprawdzam, ile wynosiła przeciętna długość życia w Polsce.
+
+```{r}
+polska <- gapminder %>%
+  select(year,country,lifeExp)%>%
+  filter(country == "Poland" & year %in% c(1952,1977,2002))
+
+polska
+zycie_polska <- polska$lifeExp
+
+polska1 <- filter(polska, year == 1952)
+ameryki1 <- gapminder %>%
+  filter(continent == "Americas" &  year == 1952 & lifeExp > polska1$lifeExp) %>%
+  select(year, country, lifeExp)
+
+polska2 <- filter(polska, year == 1977)
+ameryki2 <- gapminder %>%
+  filter(continent == "Americas" &  year == 1977 & lifeExp > polska2$lifeExp) %>%
+  select(year, country, lifeExp)
+
+polska3 <- filter(polska, year == 2002)
+ameryki3 <- gapminder %>%
+  filter(continent == "Americas" &  year == 2002 & lifeExp > polska3$lifeExp) %>%
+  select(year, country, lifeExp)
+
+ameryki1
+ameryki2
+ameryki3
+
+```
+
+W roku 1952 oraz 1977 liczba państw, w których średnia długość życia była dłuższa niż w Polsce wynosiła 6. Natomiast w roku 2002 liczba ta wzrosła do 9.
+

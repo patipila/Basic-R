@@ -1,0 +1,373 @@
+---
+title: "Ćwiczenia 3"
+author: "Patrycja Piła"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Zestaw 2
+
+## Zadanie 7
+
+Wyznaczam podstawowe statystyki opisowe dot. wielkości populacji na różnych kontynentach w roku 2007.
+
+```{r}
+library(dplyr)
+library(gapminder)
+
+populacja <- gapminder %>%
+  filter(year == "2007") %>%
+  group_by(continent)%>%
+  summarize(srednia = mean(pop),
+            odchylenie =sd(pop),
+            mediana = median(pop),
+            kwant = quantile(pop),
+            rozstęp =IQR(pop))
+populacja
+
+
+```
+
+## Zadanie 8
+
+wyznaczam po trzy kraje z Afryki, Europy i Azji, w których spodziewana długość życia jest największa.
+
+```{r}
+top_3 <-gapminder %>%
+  filter(year == "1977",
+         gdpPercap > 5000,
+         continent %in% c('Africa', "Europe", "Americas")) %>%
+  group_by(continent) %>%
+  top_n(3, lifeExp) %>%
+  arrange(country, desc(lifeExp))
+top_3
+```
+
+## Zadanie 9
+
+Wyfiltrowałam dane z roku 1987 dla krajów europejskich. Dodałam  zmienną system, która będzie przyjmowała trzy wartości: `RWPG `dla krajów `RWPG`, `UE` dla krajów Unii Europejskiej oraz inne dla pozostałych krajów.
+
+```{r}
+library(tidyr)
+systemy <- gapminder %>%
+  dplyr::select(country,continent,year,lifeExp)%>%
+  filter(year == 1987,
+         continent == "Europe") %>%
+ mutate(system = case_when(country %in% c("Albania","Bulgaria",
+                                    "Czech Republic", "Hungary", "Poland",
+                                    "Romania", "Slovak Republic") ~"RWPG",
+                          country %in% c("Spain", "Portugal","Greece",
+                                           "Denmark", "Iceland","United Kingdom",
+                                           "Belgium", "France", "Netherlands","Italy")~ "UE",
+                         TRUE~ "inny"))
+
+systemy
+
+systemy2 <- spread(systemy,system, lifeExp )
+systemy2
+```
+
+# Statystki dla krajów należących do RWPG
+
+```{r}
+summary(systemy2$RWPG)
+```
+
+# Statystki dla krajów należących do UE
+
+```{r}
+summary(systemy2$UE)
+```
+
+Statystki dla krajów nienależących do bloków współpracy gospodarczej
+
+```{r}
+summary(systemy2$inny)
+```
+
+## Zadanie 10
+
+Na jednym wykresie liniowym narysować, jak w rozważanych latach zmieniała się oczekiwana długość życia w trzech wybranych przez Ciebie krajach.
+
+```{r}
+library(tidyr)
+
+lata <- gapminder %>%
+  dplyr::select(country, year,lifeExp) %>%
+  filter(country %in% c("Norway", "Poland","United Kingdom"))
+
+lata
+lata2 <- spread(lata,country,lifeExp)
+
+lata2
+
+par(mfcol = c(1,1))
+plot( seq(1952,2007,5),lata2$`United Kingdom`,
+      col = "blue",type = "b",
+      xlab = "Długość życia", ylab = "Lata",
+      main="Zmiana długości życia",
+      ylim = c(60,82))
+lines(seq(1952,2007,5), lata2$Poland,
+      col ="darkgreen", type = "b")
+lines(seq(1952,2007,5),lata2$Norway, col = "red",
+      type = "b")
+legend(x =1990, y = 68,
+       legend=c("Wielka Brytania", "Polska",
+                "Norwegia"),
+       col=c("blue", "darkgreen", "red"), lty = 1)
+```
+
+# Zestaw 3
+
+## Zadanie 1
+
+1. Funkcja `set.seed()`
+
+```{r}
+help(set.seed)
+```
+Służy do generowania losowych liczb.
+
+2. Z wykorzystaniem funkcji `sample()` zasymuluj rzut kostką sześcienną. 
+
+```{r}
+proba1 <- sample(1:6,2,TRUE)
+proba2 <- sample(1:6,10,TRUE)
+proba3 <- sample(1:6,50,TRUE)
+proba4 <- sample(1:6,100,TRUE)
+proba5 <- sample(1:6,1000,TRUE)
+```
+
+```{r}
+table(proba1)
+table(proba2)
+table(proba3)
+table(proba4)
+table(proba5)
+
+rzuty <- data.frame(proba1,proba2,proba3,proba4,proba5)
+sapply(rzuty,mean)
+
+```
+
+3.  Dwa zespoły NBA, Chicago Bulls i NY Knicks, rozgrywają serię play-off składającą się z siedmiu meczów. Knicks są lepsi i mają 65% szans na wygranie każdego meczu. Rywalizacja toczy się do czterech zwycięstw.
+
+```{r}
+
+Chicago <- 0
+NY <- 0
+
+for (i in 1:10000) {
+  mecz <- sample(c(0:1), 7, replace = T, prob = c(0.35, 0.65))
+  if(sum(mecz == 0) > sum(mecz == 1)){
+    Chicago = Chicago + 1 
+  } else {
+    NY = NY +1
+  }
+}
+
+Chicago
+NY
+
+# b
+
+mecz <- c(1)
+mecz1 <- sample(c(1:2), 6, replace = T, prob = c(0.35, 0.65))
+mecz2 <- append(mecz, mecz1)
+mecz2
+
+Chicago <- 0
+NY <- 0
+
+for (i in 1:10000) {
+  mecz <- c(1)
+  mecz1 <- sample(c(1:2), 6, replace = T, prob = c(0.35, 0.65))
+  mecz2 <- append(mecz, mecz1)
+  if(sum(mecz2 == 1) > sum(mecz2 == 2)){
+    Chicago = Chicago + 1 
+  } else {
+    NY = NY +1
+  }
+}
+
+Chicago
+NY
+
+Chicago/10000
+
+```
+## Zadanie 2
+
+```{r}
+library(MASS)
+library(robustbase)
+```
+
+1. Wyznacza część wspólną dwóch zestawów.
+ 
+```{r}
+mammals
+Animals2
+
+zwierzaki <- intersect(rownames(mammals),rownames(Animals2))
+zwierzaki
+
+```
+Wspólnych elementów jest 57
+
+2. Wyświetlam zwierzęta obecne w zestawie mammals, których nie ma w zestawie Animals2.
+
+```{r}
+rozne <- setdiff(rownames(mammals),rownames(Animals2))
+rozne
+
+```
+
+3. 2. Wyświetlam zwierzęta obecne w zestawie Animals2, których nie ma w zestawie mammals.
+
+```{r}
+rozne2 <- setdiff(rownames(Animals2),rownames(mammals))
+rozne2
+
+```
+
+## Zadanie 3
+
+1. Użyłam funkcji z rodziny `apply()` do wyznaczenia średnich we wszystkich kolumnach wybranej ramki danych.
+
+```{r}
+
+anscombe
+sapply(anscombe, mean)
+
+```
+
+2. Użyłam funkcji `str` do sprawdzenia, które kolumny są numeryczne, i powtórzyć zad. 1 tylko do tych kolumn.
+
+```{r}
+str(anscombe)
+```
+Wszystkie kolumny są numeryczne więc wynik będzie taki sam jak w podpunkcie 1.
+
+3. Użyłam funkcji z rodziny `apply()` do wyznaczenia mediany we wszystkich kolumnach iloścowych.
+
+```{r}
+mediana <- sapply(anscombe,median)
+mediana
+
+sr <- sapply(anscombe,mean)
+
+roznica <- sr - mediana
+abs(max(roznica))
+
+```
+
+4. Użyłam funkcji z rodziny apply() do obliczenia odchylenia standardowego oraz współczynnika zmienności dla wszystkich kolumn ilościowych.
+
+```{r}
+sd <- sapply(anscombe, sd)
+
+vari<- sapply(anscombe,var)
+
+wz <- sd/sr
+
+sd
+wz
+
+```
+## Zadanie 4
+
+1.  Użyłam funkcji `qnorm()` by wyznaczyć 5% i 95% kwantyl dla rozkładu N(0,1).
+
+```{r}
+qnorm(c(0.05,0.95),0,1)
+```
+2. 
+
+```{r}
+(r1 <- qt(c(0.05,0.95),1))
+(r2 <- qt(c(0.05,0.95),5))
+(r3 <- qt(c(0.05,0.95),10))
+(r4 <- qt(c(0.05,0.95),30))
+(r5 <- qt(c(0.05,0.95),50))
+(r6 <- qt(c(0.05,0.95),1000))
+```
+
+Im większa jest liczba stopni swobody tym bardziej zbliżony jest rozkład t-Studenta do rozkładu normalnego
+
+## Zadanie 5
+
+
+```{r}
+fib <- function(x){
+  if(x <= 1) {
+      return(x)
+} else {
+      return(fib(x-1) + fib(x-2))
+}
+}
+fib(5)
+fib(7)
+fib(10)
+```
+
+## Zadanie 6
+
+**Wykres pierwszy**
+
+```{r}
+
+boxplot(mtcars$hp~mtcars$am, col = "deepskyblue3", horizontal = TRUE,
+        xlab = "Konie mechaniczne", ylab = "Skrzynia biegow",
+        main = "Zależność między rodzajem skrzyni biegów a liczbą koni mech.")
+legend("bottomright", legend = c("0 - automatyczna","1- manualna"))
+
+top <- mtcars %>%
+  dplyr::select(am,hp) %>%
+  arrange(desc(hp))%>%
+  top_n(2,hp)
+top
+```
+
+Samochody z automatyczną skrzynią biegów maja przeciętnie więcej koni mechanicznych (wyższa średnia, kwartyle), ale 2 samochody z skrzyniami manualnymi przewyższają max z automatycznych, ponieważ są to samochody sportowe
+
+**Wykres 2**
+
+```{r}
+par(mfrow = c(1,1))
+boxplot(mtcars$hp~mtcars$cyl, col = "pink", xlab = "Liczba cylindrów",
+        ylab = "Liczba koni mechanicznych")
+```
+
+Większa liczba cylindrów wiąże się z wyższą przeciętną liczbą koni mechanicznych, samochody z 8 cylindrami mają największy rozstęp liczby KM
+
+**Wykres 3**
+
+```{r}
+library(ggplot2)
+qplot(x = mtcars$wt, y = mtcars$mpg, ylab = "Spalanie [mile/galon]", xlab="Waga [1000lbs]")
+```
+
+Występuje korelacja między wagą samochodu a spalaniem - im większa waga tym większe spalanie
+
+**Wykres 4**
+
+```{r}
+barplot(table(mtcars$cyl),col = "forestgreen",
+        main = "Ilość aut o danej liczbie cylindrów",
+        xlab= "Liczba cylindrów", ylab= "Ilość [sztuki]")
+```
+
+W zestawie mtcars najwięcej jest aut, które posiadają 8 cylindrów
+
+**Wykres 5**
+
+```{r}
+hist(mtcars$qsec, main = "Histogram przyspieszenia",
+     xlab = "Przyspieszenie [1/4 mili]", ylab = "Częstość",
+     col = "firebrick")
+```

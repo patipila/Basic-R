@@ -1,0 +1,497 @@
+---
+title: "Zestaw 1"
+author: "Patrycja Piła"
+date: "2022-10-11"
+output: html_document
+---
+## ZADANIE 1 
+  
+
+Wprowadzam dwie zmienne 
+  
+
+```{r} 
+
+pierwsza<- c(5,11,6,9,7,3,8,1)  
+druga<- c(9,15,7,6,3,5,8,2)  
+
+``` 
+
+Wywołuje zmienne 
+  
+```{r} 
+
+pierwsza 
+druga 
+
+``` 
+
+Wyznaczam zmienną suma, różnica i więcej 
+
+``` {r} 
+
+suma <- pierwsza + druga 
+roznica <- pierwsza - druga 
+wiecej <- pierwsza + 1 
+
+``` 
+
+Suma wynosi: `r (suma)`. 
+
+Różnica wynosi: `r (roznica)`. 
+
+Więcej: `r (wiecej)`. 
+
+  
+Średnia arytmetyczna wyznaczona za pomocą funkcji `mean()` oraz odchylenie standardowe wyznaczone za pomocą funkcji `sd()` 
+
+  
+```{r} 
+
+mean(pierwsza) 
+
+mean(druga) 
+
+sd(pierwsza) 
+
+sd(druga) 
+
+``` 
+
+  
+
+Średnia arytmetyczna pierwszego zestawu wynosi `r mean(pierwsza)`. 
+
+Odchylenie standardowe durgiego zestawu wynosi `r sd(druga)`. 
+  
+  
+## ZADANIE 2   
+
+
+Tworzę ramkę danych o nazwie osoby, która się składa z obserwacji ``wzrost` i `waga` 
+
+```{r} 
+
+osoby<- data.frame( 
+
+  "wzrost"=c(175,165,168,182,190,157,169),  
+
+  "waga"= c(75,58,72,76,85,55,62))  
+
+``` 
+
+Wygląda ona w następujący sposób: 
+
+
+```{r} 
+osoby 
+``` 
+
+Sprawdzam strukturę obiektu za pomocą komendy `str()` 
+
+```{r} 
+str(osoby) 
+``` 
+
+Poznaję kilka pierwszych obiektów w zbiorze
+
+```{r}
+head(osoby)
+```
+
+Poznaję kilka ostatnich obiektów w zbiorze
+
+```{r}
+tail(osoby)
+```
+
+Poznaję rozmiar obiektu
+
+```{r}
+dim(osoby)
+```
+
+Wyznaczam podstawowe statystyki opisowe w obiekcie
+
+```{r}
+summary(osoby)
+```
+  
+
+## ZADANIE 3 
+
+
+Nadaję imiona obiektom z ramki osoby dzięki komendzie `rownames()` i ją wyświetlam 
+
+
+```{r} 
+
+rownames(osoby)<-c("Weronika","Alicja","Magda","Adam","Daniel","Ola","Klaudia")  
+
+osoby 
+
+``` 
+
+Następnie tworzę obiekt `BMI` 
+
+```{r} 
+
+wzrost<-c(175,165,168,182,190,157,169)  
+
+waga<- c(75,58,72,76,85,55,62)  
+
+BMI<- waga/(wzrost/100)^2 
+
+``` 
+
+Wyświetlam tylko te osoby, których wartość BMI wynosi więcej niż 30. Na początek dodaję obiekt `BMI` do ramki `osoby` 
+
+```{r} 
+
+osoby['BMI']<-BMI 
+osoby[BMI > 30]
+
+``` 
+
+
+Aby zliczyć ile osób ma **BMI<= 25** posługuję się komendą `sum()` 
+
+  
+```{r} 
+
+sum(BMI<=25)  
+
+``` 
+
+  
+
+## ZADANIE 4  
+
+
+Robię analizę ramek danych `mtcars` i `Orange` 
+
+
+(@) Komenda `str()` pozwala na sprawdzenie jakiego typu są zmienne.  
+
+```{r} 
+
+str(mtcars) 
+
+``` 
+
+``` {r} 
+
+str(Orange) 
+
+``` 
+
+
+Jak widać w przypadku `mtcars` wszystkie zmienne są numeryczne, a w ramce danych `Orange` wsytępują różne typy danych
+  
+
+
+(@) Komenda `help()` wyświetla informacje na temat danej ramki danych, m.in. jak jej używać, jaki jest format oraz źródło 
+
+  
+```{r} 
+
+help(mtcars) 
+
+help(Orange) 
+
+``` 
+
+* Wyświetlam wylącznie auta posiadające 6 cylindrów 
+
+
+```{r} 
+mtcars[mtcars$cyl == 6,]
+
+``` 
+
+* Tworzę histogram dla wybranej zmiennej z ramki `Orange`
+
+```{r}
+hist(Orange$circumference, col="darkslategray2", main = 'Histogram of Circumference', xlab='Age')
+```
+
+* Rysuję wykres pudełkowy z wąsem `(boxplot())` dla zmiennych `mpg`, `hp` i `qsec` ze zbioru mtcars
+
+```{r}
+boxplot(mpg~cyl,data=mtcars, main="Car Milage Data",
+        xlab="Number of Cylinders", ylab="Miles Per Gallon")
+
+boxplot(hp~cyl,data=mtcars, main="Car Horsepower Data",
+        xlab="Number of Cylinders", ylab="Horsepowers")
+
+boxplot(qsec~cyl,data=mtcars, main="Time od 1/4 Data",
+        xlab="Number of Cylinders", ylab="Seconds")
+
+```
+
+## ZADANIE 5
+
+Instaluję pakiet, który jest przydatnym narzędziem statystycznym dla psychologów o nazwie `psych`
+
+
+```{r}
+library(psych)
+```
+
+Korzystam z funkcji describe()
+```{r}
+describe(mtcars)
+summary(mtcars)
+```
+
+* Czym różni się funkcja `describe()` od funkcji `summary()`?
+
+Obie funkcje obliczają podstawowe statysyki, przy czym sposób ich wyśiwtlenia jest inny. Używając funkcji describe łatwiej porównać dane, funkcja summary przedstawia dane dla każdej wartości z osobna.
+
+* Wykorzystuję funkcję describeBy() grupując auta np. według liczby cylindrów
+```{r}
+describeBy(mtcars ~ cyl)
+```
+
+## ZADANIE 6
+
+(@) Generuję 20 wyników rzutu kostką do gry i nazywam tą zmienną `próba`
+
+```{r}
+próba<- sample(1:6,20,T)
+próba
+```
+Następnie obliczam odchylenie standardowe `sd()` oraz średnią `mean()`
+
+```{r}
+sd(próba)
+mean(próba)
+```
+(@) Generuje 100 wyników rzutu monetą. Nazywam tą zmienną `rzut` (jako `1` oznaczam orła, a jako `0` reszkę)
+
+```{r}
+rzut <- sample(0:1,100,T)
+```
+Następnie zliczam ile wypadło orłów
+
+```{r}
+sum(rzut == 1)
+```
+
+(@) Generuje 10 liczb ze zbioru liczb naturalnych, bez zwracania
+
+```{r}
+nat <- sample(0:100,10,F)
+nat
+```
+(@) Pozanję funkcje  `rnorm()`, `rt()` oraz `rpois()` i testuję jedną z nich
+
+```{r}
+help(rnorm)
+help(rt)
+help("rpois")
+
+rt(6, 2, 1:10)
+```
+
+## ZADANIE 7
+
+Tworzę zestaw danych `lista`
+
+``` {r}
+lista <- list(palenie <- c(F,T,T,F,F,T,F),
+              cyfry <- 0:9,
+              macierz <- matrix(sample(1:5,16,replace = T),4,4),
+              tekst <- c("Litwo", "ojczyzno", "moja", "ty", "jestes", "jak", "zdrowie"))
+```
+
+* Odwołuje się do obiektu `tekst`
+
+```{r}
+lista[[4]]
+```
+
+* Odwołuje się do trzeciego elementu wektora `cyfry`
+
+```{r}
+lista[[2]][3]
+```
+
+* Odwołuje się do trzeciej kolumny obiektu `macierz`.
+
+```{r}
+lista[[3]][,2]
+```
+
+## ZADANIE 8
+
+Sprawdzam czy liczba jest podzielna przez 4
+
+**Sposób 1**
+
+```{r}
+x <- 13
+
+if(x%%4 == 0){
+  print("Liczba podzielna przez 4")
+} else {print("Liczba niepodzielna przez 4")
+    }
+
+```
+
+**Sposób 2**
+
+```{r}
+liczba <- 12
+ifelse(liczba %% 4 == 0, 
+       "Liczba podzielna przez 4", 
+       "Liczba niepodzielna przez 4")
+```
+
+## ZADANIE 9
+
+Tworzę zmienną książki mówiącą o tym, ile dana osoba przeczytała książek w ostatnim kwartale. 
+
+```{r}
+ksiazki <- sample(0:4, size = 25, replace = TRUE)
+```
+
+* Średnia liczba przeczytanych książek
+
+```{r}
+mean(ksiazki)
+```
+
+* Ilość osób, które przeczytały przynajmniej 3 książki
+
+```{r}
+sum(ksiazki>= 3)
+```
+
+* Ilość osób, które nie przeczytały żadnej książki
+
+```{r}
+sum(ksiazki == 0)
+```
+```{r}
+ksiazki2 <- ksiazki
+for(i in 1:length(ksiazki2)){
+  if(ksiazki2[i] >= 1){
+         print("Ta osoba czyta książki")
+  } else {
+        print("Ta osoba nie czyta książek")
+  }
+  }
+
+```
+
+* Tworzę instrukcję warunkową, która mając datę (miesiąc i rok), odpowie na pytanie o liczbę dni w tym miesiącu.
+
+(@) Dołączanie pakietu: 'lubridate'
+
+```{r}
+dzien <- "2022-10-16"
+
+library(lubridate)
+```
+
+```{r}
+day <- ymd(dzien)
+
+miesiac31 <- c("1", "3", "5", "7", "8", "10", "12")
+miesiac30 <- c("4", "6", "9", "11")
+miesiac28 <- c("2")
+
+
+miesiac <- function(m,r){if(month(m)%in%miesiac31 == TRUE){
+  print("Miesiąc ma 31 dni")
+} else if(month(m)%in%miesiac30 == TRUE){
+  print("Miesiąc ma 30 dni")
+} else {
+    if(month(m)%in%miesiac28 & r%%100==0 & r%%400==0){
+      print("Miesiąc ma 29 dni")
+    } else if (month(m)%in%miesiac28 & r%%100!=0 & r%%4==0){
+        print("Miesiąc ma 29 dni")
+    } else {
+        print("Miesiąc ma 28 dni")
+      }
+}}
+
+miesiac(3,2022)
+miesiac(2,2020)
+miesiac(2,1900)
+```
+
+## ZADANIE 10
+
+Funkcja, która zamienia temperaturę w Celsjuszach na temperaturę w Kelwinach i Fahrenheita
+
+* Funkcja zamieniająca z stopni Celsjusza na Kelwiny
+```{r}
+celsius_to_kelvin <- function(temp_C) {
+  temp_K <- temp_C + 273.15
+  return(temp_K)
+}
+```
+
+
+7 stopni C to `r (celsius_to_kelvin(7))` stopni Kelwina.
+
+* Funkcja zamieniająca z stopni Celsjusza na Fahrenheit'a
+
+```{r}
+celcius_to_fahrenheit <- function(tempC) {
+  temp_F <- (9/5)* tempC + 32
+  return(temp_F)
+}
+```
+
+30 stopni C to `r (celcius_to_fahrenheit(30))` stopni Fahrenheita.
+
+## ZADANIE 11
+
+Tworzyę funkcję, która na podstawie długości boków trójkąta, wyznacza jego pole. Dbam o to, by funkcja wyświetliła komunikat, jeśli podane długości boków nie tworzą trójkąta.
+
+```{r}
+obliczanie_pola <- function(a,b,c){
+  if(a+b >c && a+c >b && c+b >a){
+    p <- 0.5*(a+b+c)
+    pole <- sqrt(p*(p-a)*(p-b)*(p-c))
+    return(pole)
+  } else{
+    print("To nie jest trójkąt")
+  }
+}
+
+obliczanie_pola(1,4,3)
+obliczanie_pola(5,4,3)
+```
+
+## ZADANIE 12
+
+Stworzyłam funkcję, która na podstawie długości boków trójkąta odpowiada na pytanie o to, czy trójkąt jest ostrokątny, prostokątny lub rozwartokątny.
+
+```{r}
+rodzaj_trojkata <- function(a,b,c){
+  if(a+b >c && a+c >b && c+b >a){
+  if(a<=b && b<=c){
+    if(a^2+b^2<c^2){
+      print("Jest to trójkąt rozwartokątny")
+    } else if(a^2+b^2>c^2){
+      print("Jest to trójkąt ostrokątny")
+    } else{
+      print("Jest to trójkąt prostokątny")
+    }
+  } else {
+    print("Wprowadz boki od najkrótszego do najdłużeszgo")
+  }
+  }else{
+    print("To nie jest trójkąt")}
+}
+
+rodzaj_trojkata(5,8,9)
+rodzaj_trojkata(9,8,5)
+rodzaj_trojkata(2.5,6,6.5)
+rodzaj_trojkata(sqrt(2),sqrt(3),sqrt(6))
+rodzaj_trojkata(1,2,3)
+```
