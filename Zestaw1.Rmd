@@ -1,5 +1,5 @@
 ---
-title: "Zestaw 1"
+title: "Zestaw1"
 author: "Patrycja Piła"
 date: "2022-10-11"
 output: html_document
